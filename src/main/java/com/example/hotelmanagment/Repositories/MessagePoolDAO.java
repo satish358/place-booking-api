@@ -9,4 +9,5 @@ import java.util.List;
 @Repository
 public interface MessagePoolDAO extends JpaRepository<MessagePool, Long> {
     List<MessagePool> findAllBySenderOrderByCreatedOn(Long sender);
+    List<MessagePool> findAllByReceiverOrderByCreatedOn(Long sender);
 }

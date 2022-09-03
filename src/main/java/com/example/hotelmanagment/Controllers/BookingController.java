@@ -39,6 +39,12 @@ public class BookingController {
         List<Booking> bookings = bookingDAO.findAll();
         return new ResponseEntity<>(new BasicResponseDTO<>(true, "all data", bookings),HttpStatus.OK);
     }
+    @GetMapping("/by-user/{userId}")
+    @Operation( security = @SecurityRequirement(name = "bearerAuth"))
+    public ResponseEntity<BasicResponseDTO<List<Booking>>> getAllBookings(@PathVariable Long userId) {
+        List<Booking> bookings = bookingDAO.findBookingsByBookedBy(userId);
+        return new ResponseEntity<>(new BasicResponseDTO<>(true, "all data", bookings),HttpStatus.OK);
+    }
     @DeleteMapping("/remove/{bookingId}")
     @Operation( security = @SecurityRequirement(name = "bearerAuth"))
     public ResponseEntity<BasicResponseDTO<?>> deleteBooking( @PathVariable Long  bookingId) {

@@ -26,8 +26,8 @@ public class MessagePoolService {
         messagePoolDAO.save(messagePool);
         return messagePool;
     }
-    public List<MessagePool> getAllMessagesByUserId(Long sender){
-        return messagePoolDAO.findAllBySenderOrderByCreatedOn(sender);
+    public List<MessagePool> getAllMessagesByUserId(Long receiver){
+        return messagePoolDAO.findAllByReceiverOrderByCreatedOn(receiver);
     }
     public List<MessagePool> getAll(){
         return messagePoolDAO.findAll();
