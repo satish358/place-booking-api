@@ -72,8 +72,10 @@ public class UserService  {
         loginResponseDTO.setContact(user.getContact());
         loginResponseDTO.setName(user.getName());
         loginResponseDTO.setEmail(user.getEmail());
+        loginResponseDTO.setUser(user);
         basicResponseDTO.setData(loginResponseDTO);
         basicResponseDTO.setSuccess(true);
+
         return basicResponseDTO;
     }
 

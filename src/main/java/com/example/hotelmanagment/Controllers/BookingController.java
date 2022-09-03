@@ -16,6 +16,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
+import java.util.List;
+import java.util.Optional;
 
 @CrossOrigin
 @RestController
@@ -31,6 +33,18 @@ public class BookingController {
 
     @Autowired
     PropertiesDAO propertiesDAO;
+    @GetMapping("/all")
+    @Operation( security = @SecurityRequirement(name = "bearerAuth"))
+    public ResponseEntity<BasicResponseDTO<List<Booking>>> getAllBookings() {
+        List<Booking> bookings = bookingDAO.findAll();
+        return new ResponseEntity<>(new BasicResponseDTO<>(true, "all data", bookings),HttpStatus.OK);
+    }
+    @DeleteMapping("/remove/{bookingId}")
+    @Operation( security = @SecurityRequirement(name = "bearerAuth"))
+    public ResponseEntity<BasicResponseDTO<?>> deleteBooking( @PathVariable Long  bookingId) {
+        bookingDAO.deleteById(bookingId);
+        return new ResponseEntity<>(new BasicResponseDTO<>(true, "Booking successfully removed", null),HttpStatus.OK);
+    }
     @PostMapping("/save")
     @Operation(summary = "Used to make booking", security = @SecurityRequirement(name = "bearerAuth"))
     public ResponseEntity<BasicResponseDTO<Booking>> saveBooking(@RequestBody SaveBookingRequestDTO saveBookingRequestDTO) {
@@ -51,16 +65,20 @@ public class BookingController {
     }
 
     @GetMapping("/{bookingId}")
-    @Operation(summary = "Used get booking", security = @SecurityRequirement(name = "bearerAuth"))
+    @Operation( security = @SecurityRequirement(name = "bearerAuth"))
     public ResponseEntity<BasicResponseDTO<Booking>> getBookingByUserId(@PathVariable Long bookingId) {
-        return new ResponseEntity<>(new BasicResponseDTO<>(true, "all data", bookingDAO.getById(bookingId)),HttpStatus.OK);
+        Optional<Booking> _booking = bookingDAO.findById(bookingId);
+        return new ResponseEntity<>(new BasicResponseDTO<>(true, "all data", _booking.isPresent() ? _booking.get() : null),HttpStatus.OK);
     }
     @GetMapping("/confirm/{bookingId}")
-    @Operation(summary = "Used get booking", security = @SecurityRequirement(name = "bearerAuth"))
+    @Operation( security = @SecurityRequirement(name = "bearerAuth"))
     public ResponseEntity<BasicResponseDTO<Booking>> confirmBooking(@PathVariable Long bookingId) {
-        Booking booking = bookingDAO.getById(bookingId);
-        booking.setIsConfirmed(true);
-        bookingDAO.save(booking);
-        return new ResponseEntity<>(new BasicResponseDTO<>(true, "Booking confirmed",booking ),HttpStatus.OK);
+        Optional<Booking> booking = bookingDAO.findById(bookingId);
+        if(booking.isPresent()) {
+            Booking _booking = booking.get();
+            _booking.setIsConfirmed(true);
+            bookingDAO.save(_booking);
+        }
+        return new ResponseEntity<>(new BasicResponseDTO<>(true, "Booking confirmed",null ),HttpStatus.OK);
     }
 }
