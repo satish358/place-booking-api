@@ -33,6 +33,18 @@ public class MessagePoolController {
                 HttpStatus.OK
         );
     }
+    @GetMapping("/all")
+    @Operation(security = @SecurityRequirement(name = "bearerAuth"))
+    public ResponseEntity<BasicResponseDTO<List<MessagePool>>> getMessages() {
+        return new ResponseEntity<>(
+                new BasicResponseDTO<>(
+                        true,
+                        "Data is available",
+                        messagePoolService.getAll()
+                ),
+                HttpStatus.OK
+        );
+    }
     @PostMapping("/send")
     @Operation(summary = "It will send new message", security = @SecurityRequirement(name = "bearerAuth"))
     public ResponseEntity<BasicResponseDTO<MessagePool>> sendMessage(@RequestBody SendMessageRequestDTO sendMessageRequestDTO){

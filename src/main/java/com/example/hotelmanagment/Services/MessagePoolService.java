@@ -29,4 +29,7 @@ public class MessagePoolService {
     public List<MessagePool> getAllMessagesByUserId(Long sender){
         return messagePoolDAO.findAllBySenderOrderByCreatedOn(sender);
     }
+    public List<MessagePool> getAll(){
+        return messagePoolDAO.findAll();
+    }
 }

@@ -1,6 +1,7 @@
 package com.example.hotelmanagment.Controllers;
 
 import com.example.hotelmanagment.Enums.FeatureEnum;
+import com.example.hotelmanagment.Models.Images;
 import com.example.hotelmanagment.Models.Properties;
 import com.example.hotelmanagment.Services.FeatureService;
 import com.example.hotelmanagment.Services.PropertiesService;
@@ -15,7 +16,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
 import java.util.Optional;
 
 @CrossOrigin
@@ -73,6 +76,22 @@ public class PropertyController {
     public ResponseEntity<BasicResponseDTO<Properties>> deleteProperty(@PathVariable(value = "propertyId") long propertyId){
          propertiesService.deleteProperty(propertyId);
         return new ResponseEntity<>(new BasicResponseDTO<>(true, "Property Deleted", null ), HttpStatus.OK);
+    }
+
+    @RequestMapping(path = "/add-image/{propertyId}", method = RequestMethod.POST, consumes = { MediaType.MULTIPART_FORM_DATA_VALUE })
+    @Operation(security = @SecurityRequirement(name = "bearerAuth"))
+    public ResponseEntity<BasicResponseDTO<?>> updateProperty(@RequestParam("file") MultipartFile file, @PathVariable( value = "propertyId") Long propertyId){
+        Boolean isImageAdded = propertiesService.addImage(propertyId, file);
+        if(isImageAdded)
+            return new ResponseEntity<>(new BasicResponseDTO<>(true, "Image added successfully", null), HttpStatus.OK);
+        return new ResponseEntity<>(new BasicResponseDTO<>(false, "Something went wrong", null), HttpStatus.OK);
+    }
+
+    @GetMapping("/all-images/{propertyId}")
+    @Operation(security = @SecurityRequirement(name = "bearerAuth"))
+    public ResponseEntity<BasicResponseDTO<List<Images>>> getAllPropertyImages(@PathVariable(value = "propertyId") Long propertyId){
+        List<Images> imagesList = propertiesService.getAllImagesByProduct(propertyId);
+        return new ResponseEntity<>(new BasicResponseDTO<>(true, "All records", imagesList), HttpStatus.OK);
     }
 }
 // eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJzYXRpc2htQGdtYWlsLmNvbSIsImV4cCI6MTY2MjE2Mjc2OSwiaWF0IjoxNjYyMTQ0NzY5fQ.Iucmr-axs4XllEhqYYIl3xKmk4CFIxqXyctcSfuE_rVs6sbSLFW7dIfKotqYuPa3UE7BQmlf5dM3bVG4fzquDw

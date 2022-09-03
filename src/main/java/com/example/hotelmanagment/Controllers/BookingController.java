@@ -50,7 +50,6 @@ public class BookingController {
     public ResponseEntity<BasicResponseDTO<Booking>> saveBooking(@RequestBody SaveBookingRequestDTO saveBookingRequestDTO) {
         Booking booking = new Booking();
         Properties property = propertiesDAO.getById(saveBookingRequestDTO.getPropertyId());
-
         booking.setBookedBy(userDAO.getById(saveBookingRequestDTO.getBookedByUserId()));
         booking.setBookedOn(new Date());
         booking.setProperty(property);

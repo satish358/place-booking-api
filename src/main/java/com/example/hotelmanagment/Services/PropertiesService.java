@@ -1,7 +1,9 @@
 package com.example.hotelmanagment.Services;
 
 import com.example.hotelmanagment.Enums.FeatureEnum;
+import com.example.hotelmanagment.Models.Images;
 import com.example.hotelmanagment.Models.Properties;
+import com.example.hotelmanagment.Repositories.ImageDAO;
 import com.example.hotelmanagment.Repositories.PropertiesDAO;
 import com.example.hotelmanagment.DTO.UpdatePropertyRequestDTO;
 import com.example.hotelmanagment.Repositories.UserDAO;
@@ -13,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -23,6 +26,8 @@ public class PropertiesService {
     UserDAO userDAO;
     @Autowired
     FilesStorageService storageService;
+    @Autowired
+    ImageDAO imageDAO;
     @Value("${files.upload.url}")
     private String filesUrl;
 
@@ -54,6 +59,19 @@ public class PropertiesService {
         property.setPrice(updatePropertyRequestDTO.getPrice());
         propertiesDAO.save(property);
         return Optional.of(property);
+    }
+    public boolean addImage(Long propertyId, MultipartFile file){
+        Optional<String> fileName =  storageService.save(file);
+        Images images = new Images();
+        images.setPropertyId(propertyId);
+        if(fileName.isPresent()) {
+            images.setImageUrl(filesUrl + fileName.get());
+            imageDAO.save(images);
+            return true;
+        } else return false;
+    }
+    public List<Images> getAllImagesByProduct(Long productId){
+       return imageDAO.findImagesByPropertyId(productId);
     }
     public void deleteProperty(Long propertyId){
          propertiesDAO.deleteById(propertyId);
