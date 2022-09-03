@@ -5,9 +5,11 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+
 import javax.persistence.*;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 @Entity @AllArgsConstructor @NoArgsConstructor @Data
 public class Properties {
@@ -16,7 +18,8 @@ public class Properties {
     private String name;
     private String address;
     private Long userId;
-    private Boolean isAvailable;
+    private Long price;
+    private String bannerUrl;
     private PropertyType type;
     private Date createdOn;
     private Boolean active;

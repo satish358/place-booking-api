@@ -23,4 +23,6 @@ public class UpdatePropertyRequestDTO {
     private boolean isActive;
     @NotBlank
     private boolean isAvailable;
+    @NotBlank
+    private Long price;
 }

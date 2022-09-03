@@ -1,6 +1,8 @@
 package com.example.hotelmanagment.Controllers;
 
+import com.example.hotelmanagment.Enums.FeatureEnum;
 import com.example.hotelmanagment.Models.Properties;
+import com.example.hotelmanagment.Services.FeatureService;
 import com.example.hotelmanagment.Services.PropertiesService;
 import com.example.hotelmanagment.DTO.BasicResponseDTO;
 import com.example.hotelmanagment.DTO.CreatePropertyRequestDTO;
@@ -10,6 +12,7 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,6 +25,8 @@ public class PropertyController {
 
     @Autowired
     PropertiesService propertiesService;
+    @Autowired
+    FeatureService featureService;
 
     @GetMapping("")
     @Operation(summary = "It will shows all properties, page number start with 0 zero", security = @SecurityRequirement(name = "bearerAuth"))
@@ -40,15 +45,19 @@ public class PropertyController {
         return new ResponseEntity<>(new BasicResponseDTO<>(false, "No records present", null ), HttpStatus.OK);
     }
 
-    @PostMapping("/create")
+    @RequestMapping(path = "/create", method = RequestMethod.POST, consumes = { MediaType.MULTIPART_FORM_DATA_VALUE })
     @Operation(summary = "Used to add property", security = @SecurityRequirement(name = "bearerAuth"))
-    public ResponseEntity<BasicResponseDTO<Properties>> createProperty(@RequestBody CreatePropertyRequestDTO createPropertyRequestDTO){
+    public ResponseEntity<BasicResponseDTO<Properties>> createProperty(@ModelAttribute CreatePropertyRequestDTO createPropertyRequestDTO){
         Properties properties = new Properties();
         properties.setType(createPropertyRequestDTO.getType());
         properties.setName(createPropertyRequestDTO.getName());
         properties.setAddress(createPropertyRequestDTO.getAddress());
         properties.setUserId(createPropertyRequestDTO.getUserId());
-        Properties savedData = propertiesService.createProperty(properties);
+        properties.setPrice(createPropertyRequestDTO.getPrice());
+        Properties savedData = propertiesService.createProperty(properties, createPropertyRequestDTO.getBanner());
+        if(createPropertyRequestDTO.getFeatures().length > 0) {
+            featureService.saveAll(createPropertyRequestDTO.getFeatures(), savedData.getId());
+        }
         return new ResponseEntity<>(new BasicResponseDTO<>(true, "Property saved", savedData), HttpStatus.CREATED);
     }
     @PutMapping("/update")

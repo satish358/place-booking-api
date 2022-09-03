@@ -1,12 +1,15 @@
 package com.example.hotelmanagment.Services;
 
+import com.example.hotelmanagment.Enums.FeatureEnum;
 import com.example.hotelmanagment.Models.Properties;
 import com.example.hotelmanagment.Repositories.PropertiesDAO;
 import com.example.hotelmanagment.DTO.UpdatePropertyRequestDTO;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Date;
 import java.util.Optional;
@@ -15,6 +18,10 @@ import java.util.Optional;
 public class PropertiesService {
     @Autowired
     PropertiesDAO propertiesDAO;
+    @Autowired
+    FilesStorageService storageService;
+    @Value("${files.upload.url}")
+    private String filesUrl;
 
     public Page<Properties> getAllProperties(int page, int size) {
         return propertiesDAO.findAll(PageRequest.of(page, size));
@@ -22,10 +29,13 @@ public class PropertiesService {
     public Optional<Properties> getProperty(Long propertyId){
         return propertiesDAO.findById(propertyId);
     }
-    public Properties createProperty(Properties properties){
+    public Properties createProperty(Properties properties, MultipartFile banner){
+        Optional<String> fileName =  storageService.save(banner);
+        if(fileName.isPresent())
+            properties.setBannerUrl(filesUrl+fileName.get());
+
         properties.setCreatedOn(new Date());
         properties.setActive(true);
-        properties.setIsAvailable(true);
         propertiesDAO.save(properties);
         return properties;
     }
@@ -38,7 +48,7 @@ public class PropertiesService {
         property.setName(updatePropertyRequestDTO.getName());
         property.setAddress(updatePropertyRequestDTO.getAddress());
         property.setActive(updatePropertyRequestDTO.isActive());
-        property.setIsAvailable(updatePropertyRequestDTO.isAvailable());
+        property.setPrice(updatePropertyRequestDTO.getPrice());
         propertiesDAO.save(property);
         return Optional.of(property);
     }
