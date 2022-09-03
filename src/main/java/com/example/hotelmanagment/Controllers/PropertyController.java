@@ -61,7 +61,7 @@ public class PropertyController {
         if(createPropertyRequestDTO.getFeatures().length > 0) {
             featureService.saveAll(createPropertyRequestDTO.getFeatures(), savedData.getId());
         }
-        return new ResponseEntity<>(new BasicResponseDTO<>(true, "Property saved", savedData), HttpStatus.CREATED);
+        return new ResponseEntity<>(new BasicResponseDTO<>(true, "Property saved", null), HttpStatus.CREATED);
     }
     @PutMapping("/update")
     @Operation(summary = "Used to update property", security = @SecurityRequirement(name = "bearerAuth"))

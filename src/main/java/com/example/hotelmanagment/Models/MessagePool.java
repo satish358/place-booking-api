@@ -15,8 +15,12 @@ import java.util.Date;
 public class MessagePool {
     @Id @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
-    private Long sender;
-    private Long receiver;
+    @OneToOne
+    @JoinColumn(name = "sender")
+    private User sender;
+    @OneToOne
+    @JoinColumn(name = "receiver")
+    private User receiver;
     private String message;
     @Column( columnDefinition = "TIMESTAMP")
     private Date createdOn;
