@@ -4,6 +4,7 @@ import com.example.hotelmanagment.Enums.FeatureEnum;
 import com.example.hotelmanagment.Models.Properties;
 import com.example.hotelmanagment.Repositories.PropertiesDAO;
 import com.example.hotelmanagment.DTO.UpdatePropertyRequestDTO;
+import com.example.hotelmanagment.Repositories.UserDAO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
@@ -19,6 +20,8 @@ public class PropertiesService {
     @Autowired
     PropertiesDAO propertiesDAO;
     @Autowired
+    UserDAO userDAO;
+    @Autowired
     FilesStorageService storageService;
     @Value("${files.upload.url}")
     private String filesUrl;
@@ -29,11 +32,11 @@ public class PropertiesService {
     public Optional<Properties> getProperty(Long propertyId){
         return propertiesDAO.findById(propertyId);
     }
-    public Properties createProperty(Properties properties, MultipartFile banner){
+    public Properties createProperty(Properties properties, MultipartFile banner, Long userId){
         Optional<String> fileName =  storageService.save(banner);
         if(fileName.isPresent())
             properties.setBannerUrl(filesUrl+fileName.get());
-
+        properties.setUser(userDAO.getById(userId));
         properties.setCreatedOn(new Date());
         properties.setActive(true);
         propertiesDAO.save(properties);

@@ -1,6 +1,7 @@
 package com.example.hotelmanagment.Models;
 
 import com.example.hotelmanagment.Enums.PropertyType;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -17,7 +18,9 @@ public class Properties {
     private Long id;
     private String name;
     private String address;
-    private Long userId;
+    @OneToOne
+    @JoinColumn(name = "userId")
+    private User user;
     private Long price;
     private String bannerUrl;
     private PropertyType type;

@@ -52,9 +52,9 @@ public class PropertyController {
         properties.setType(createPropertyRequestDTO.getType());
         properties.setName(createPropertyRequestDTO.getName());
         properties.setAddress(createPropertyRequestDTO.getAddress());
-        properties.setUserId(createPropertyRequestDTO.getUserId());
+
         properties.setPrice(createPropertyRequestDTO.getPrice());
-        Properties savedData = propertiesService.createProperty(properties, createPropertyRequestDTO.getBanner());
+        Properties savedData = propertiesService.createProperty(properties, createPropertyRequestDTO.getBanner(), createPropertyRequestDTO.getUserId());
         if(createPropertyRequestDTO.getFeatures().length > 0) {
             featureService.saveAll(createPropertyRequestDTO.getFeatures(), savedData.getId());
         }
