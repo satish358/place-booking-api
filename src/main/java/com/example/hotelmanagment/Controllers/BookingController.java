@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @CrossOrigin
 @RestController
@@ -37,6 +38,12 @@ public class BookingController {
     @Operation( security = @SecurityRequirement(name = "bearerAuth"))
     public ResponseEntity<BasicResponseDTO<List<Booking>>> getAllBookings() {
         List<Booking> bookings = bookingDAO.findAll();
+        return new ResponseEntity<>(new BasicResponseDTO<>(true, "all data", bookings),HttpStatus.OK);
+    }
+    @GetMapping("/all/{userId}")
+    @Operation( security = @SecurityRequirement(name = "bearerAuth"))
+    public ResponseEntity<BasicResponseDTO<List<Booking>>> getAllBookings(@PathVariable(name = "userId") long userId ) {
+        List<Booking> bookings = bookingDAO.findAll().stream().filter(item-> item.getBookedBy().getUserId().equals(userId)).collect(Collectors.toList());
         return new ResponseEntity<>(new BasicResponseDTO<>(true, "all data", bookings),HttpStatus.OK);
     }
     @GetMapping("/by-user/{userId}")
@@ -65,7 +72,7 @@ public class BookingController {
         booking.setTotalPayment(saveBookingRequestDTO.getTotalPayment());
         booking.setIsConfirmed(false);
         bookingDAO.save(booking);
-        defaultEmailService.sendSimpleEmail(property.getUser().getEmail(), "Your property is booked", "Hello sir i'm exited to share this news, you propery is book");
+//        defaultEmailService.sendSimpleEmail(property.getUser().getEmail(), "Your property is booked", "Hello sir i'm exited to share this news, you propery is book");
         return ResponseEntity.ok().body(new BasicResponseDTO<>(true, "Booking added", null));
     }
 
